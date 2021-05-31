@@ -51,6 +51,22 @@ function doTestNoCompression() {
   return log;
 }
 
+function doTestWithCompression() {
+  console.log('doTestWithCompression');
+  utils.pkg.sync(
+    ['--compress', 'Brotli', '--target', target, '--output', output1, input],
+    {
+      //   expect: 0,
+    }
+  );
+  const log = utils.spawn.sync(path.join(__dirname, output1), [], {
+    cwd: __dirname,
+    // expect: 0,
+    stdio: ['inherit', 'pipe', 'pipe'],
+  });
+  return log;
+}
+
 const logNoCompression = doTestNoCompression();
 if (logNoCompression.stderr !== '') {
   console.log('NO COMPRESSION: expecting no error');
@@ -59,6 +75,12 @@ if (logNoCompression.stderr !== '') {
 }
 
 // now with compress
+const logWithCompression = doTestWithCompression();
+if (logWithCompression.stderr !== '') {
+  console.log('NO COMPRESSION: expecting no error');
+  console.log('but got =', logWithCompression.stderr);
+  process.exit(1);
+}
 
 utils.vacuum.sync(output1);
 utils.vacuum.sync(output2);
